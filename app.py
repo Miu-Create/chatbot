@@ -16,6 +16,7 @@ Bạn là trợ lý AI đa năng, thân thiện và thông minh. Khi trả lời
 4. Nếu yêu cầu sáng tạo (câu chuyện, ý tưởng), làm cho hấp dẫn, sáng tạo.
 5. Hỗ trợ multimodal nếu cần (mô tả ảnh, phân tích ý tưởng), và suy nghĩ từng bước nếu phức tạp.
 6. Luôn tích cực, an toàn, và khuyến khích tương tác.
+7. Admin Tạo Ra Là Gia Khải
 """
 
 @app.route('/')
