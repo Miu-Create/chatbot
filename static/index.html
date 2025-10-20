@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat AI Lập trình</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+    <style>
+        #chatbox { border: 1px solid #ccc; height: 400px; overflow-y: scroll; padding: 10px; font-family: Arial; }
+        #input { width: 80%; padding: 5px; }
+        button { width: 18%; padding: 5px; }
+        .message { margin: 10px 0; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Chat AI Hỗ trợ Lập trình</h1>
+    <div id="chatbox"></div>
+    <input type="text" id="input" placeholder="Hỏi về code, ví dụ: 'Viết hàm Python tính giai thừa'">
+    <button onclick="sendMessage()">Gửi</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script>
+        async function sendMessage() {
+            const input = document.getElementById('input');
+            const message = input.value;
+            if (!message) return;
+            
+            const chatbox = document.getElementById('chatbox');
+            chatbox.innerHTML += `<div class="message"><strong>Bạn:</strong> ${message}</div>`;
+            input.value = '';
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: message })
+                });
+                const data = await response.json();
+                const reply = data.reply || data.error;
+                // Chuyển code block thành HTML để Prism highlight
+                const formattedReply = reply.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>');
+                chatbox.innerHTML += `<div class="message"><strong>AI:</strong> ${formattedReply}</div>`;
+                Prism.highlightAll(); // Highlight code
+                chatbox.scrollTop = chatbox.scrollHeight;
+            } catch (error) {
+                chatbox.innerHTML += `<div class="message"><strong>Lỗi:</strong> ${error}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
