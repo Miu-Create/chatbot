@@ -6,10 +6,8 @@ app = Flask(__name__, static_folder='static')
 
 genai.configure(api_key=os.environ.get('GEMINI_API_KEY', 'AIzaSyDeHPwENAx3vZwFop1wLn3vYIpmKLxvuEc'))
 
-# Dùng Gemini 2.5 Pro - hỗ trợ reasoning sâu, multimodal, tool use, context dài 1M token
 model = genai.GenerativeModel('gemini-2.5-pro')
 
-# Prompt đa năng: Không chỉ code, mà hỗ trợ nhiều lĩnh vực (hỏi đáp, sáng tạo, tư vấn, v.v.)
 GENERAL_PROMPT = """
 Bạn là trợ lý AI đa năng, thân thiện và thông minh. Khi trả lời:
 1. Hiểu rõ ngữ cảnh và trả lời ngắn gọn, hữu ích bằng tiếng Việt.
@@ -31,7 +29,6 @@ def chat():
         if not user_message:
             return jsonify({'error': 'Vui lòng nhập tin nhắn'}), 400
 
-        # Gửi prompt chung + yêu cầu user
         response = model.generate_content(GENERAL_PROMPT + "\nYêu cầu: " + user_message)
         ai_reply = response.text
         return jsonify({'reply': ai_reply})
