@@ -2,31 +2,28 @@ from flask import Flask, request, jsonify, send_from_directory
 import google.generativeai as genai
 import os
 
-# Khởi tạo Flask app
 app = Flask(__name__, static_folder='static')
 
-# Cấu hình API key từ biến môi trường (Render sẽ set qua Environment)
-genai.configure(api_key=os.environ.get('GEMINI_API_KEY', 'AIzaSyD0Bt0WGMf7yvZrQCYpHx_uoqqv61bZwjE'))
+genai.configure(api_key=os.environ.get('GEMINI_API_KEY', 'AIzaSyDeHPwENAx3vZwFop1wLn3vYIpmKLxvuEc'))
 
-# Chọn model Gemini
-model = genai.GenerativeModel('gemini-2.5-flash')
+# Dùng Gemini 2.5 Pro - hỗ trợ reasoning sâu, multimodal, tool use, context dài 1M token
+model = genai.GenerativeModel('gemini-2.5-pro')
 
-# Prompt tối ưu cho lập trình, trả lời đẹp và rõ ràng
-CODING_PROMPT = """
-Bạn là trợ lý lập trình chuyên nghiệp. Khi trả lời:
-1. Nếu viết code, đặt code trong khối ```language
-2. Giải thích code ngắn gọn, dễ hiểu, bằng tiếng Việt.
-3. Nếu debug, chỉ ra lỗi cụ thể và cách sửa.
-4. Nếu giải thích thuật toán, chia thành các bước logic.
-Trả lời bằng tiếng Việt, giữ code bằng tiếng Anh.
+# Prompt đa năng: Không chỉ code, mà hỗ trợ nhiều lĩnh vực (hỏi đáp, sáng tạo, tư vấn, v.v.)
+GENERAL_PROMPT = """
+Bạn là trợ lý AI đa năng, thân thiện và thông minh. Khi trả lời:
+1. Hiểu rõ ngữ cảnh và trả lời ngắn gọn, hữu ích bằng tiếng Việt.
+2. Nếu hỏi về code/lập trình, trả code trong khối ```python (hoặc ngôn ngữ khác), kèm giải thích.
+3. Nếu hỏi chung (tin tức, giải trí, tư vấn), trả lời tự nhiên, thêm ví dụ nếu cần.
+4. Nếu yêu cầu sáng tạo (câu chuyện, ý tưởng), làm cho hấp dẫn, sáng tạo.
+5. Hỗ trợ multimodal nếu cần (mô tả ảnh, phân tích ý tưởng), và suy nghĩ từng bước nếu phức tạp.
+6. Luôn tích cực, an toàn, và khuyến khích tương tác.
 """
 
-# Route chính, trả về giao diện chat
 @app.route('/')
 def serve_index():
     return send_from_directory(app.static_folder, 'index.html')
 
-# Route xử lý chat
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
@@ -34,13 +31,12 @@ def chat():
         if not user_message:
             return jsonify({'error': 'Vui lòng nhập tin nhắn'}), 400
 
-        # Gửi prompt và yêu cầu của user
-        response = model.generate_content(CODING_PROMPT + "\nYêu cầu: " + user_message)
+        # Gửi prompt chung + yêu cầu user
+        response = model.generate_content(GENERAL_PROMPT + "\nYêu cầu: " + user_message)
         ai_reply = response.text
         return jsonify({'reply': ai_reply})
     except Exception as e:
         return jsonify({'error': f'Lỗi: {str(e)}'}), 500
 
-# Chạy app với gunicorn (Render sẽ override)
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
