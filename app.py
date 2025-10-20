@@ -6,7 +6,7 @@ app = Flask(__name__, static_folder='static')
 
 genai.configure(api_key=os.environ.get('GEMINI_API_KEY', 'AIzaSyDeHPwENAx3vZwFop1wLn3vYIpmKLxvuEc'))
 
-model = genai.GenerativeModel('gemini-2.5-pro')
+model = genai.GenerativeModel('gemini-2.5-flash')
 
 GENERAL_PROMPT = """
 Bạn là trợ lý AI đa năng, thân thiện và thông minh. Khi trả lời:
