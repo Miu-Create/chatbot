@@ -9,7 +9,7 @@ app = Flask(__name__, static_folder='static')
 genai.configure(api_key=os.environ.get('GEMINI_API_KEY', 'AIzaSyD0Bt0WGMf7yvZrQCYpHx_uoqqv61bZwjE'))
 
 # Chọn model Gemini
-model = genai.GenerativeModel('gemini-pro')
+model = genai.GenerativeModel('gemini-2.5-flash')
 
 # Prompt tối ưu cho lập trình, trả lời đẹp và rõ ràng
 CODING_PROMPT = """
